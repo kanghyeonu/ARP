@@ -59,7 +59,7 @@ static int query_stat;
 //get interface mac addr.
 // ex) interface2mac("eth0", buf)
 // return : 1 success
-//	  : 0 fail
+//	  	  : 0 fail
 int interface2mac(const char* interface, uchar * mac)  
 {
     int fd = socket(PF_INET,SOCK_STREAM, 0);  //make socket, socket(ipv4,tcp/ip, 0)
@@ -89,7 +89,7 @@ int interface2mac(const char* interface, uchar * mac)
 // get mac address to arp cash
 // exam) get_arp_to_arpcash(ip)
 // return : 1 success
-//	  : 0 failure
+//	  	  : 0 failure
 int get_arp_to_arpcash(unsigned long ip)
 {
     int fd = 0;
@@ -112,7 +112,6 @@ int get_arp_to_arpcash(unsigned long ip)
 }
 
 //get mac address from ip, interface
-// ex) arp_cash_lookup("eth0", ip , buf)
 // return 1 : success
 //	  0 : failure
 int arp_cash_lookup(const char* interface, unsigned long ip, uchar * mac)
@@ -146,7 +145,7 @@ int arp_cash_lookup(const char* interface, unsigned long ip, uchar * mac)
 //string to mac address
 // exam) "01:02:03:0d:0e:0f"
 // return : 1 success
-//	    0 faillure
+//	    	0 faillure
 int str2mac(const  char * str_mac, uchar * mac) 
 {
     int ret = sscanf(str_mac, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
@@ -167,9 +166,8 @@ int str2ip(const char * str_ip, uchar * ip)
 }
 
 //convert ip to mac address
-//  ex) ip2mac("eth0", "192.168.0.10", buf);
-//  return : 1 success
-//	     0 failur
+// return : 1 success
+//	     	0 failure
 int ip2mac(const char * intf, const char * str_ip, uchar* mac)
 {
     int i = 0;
@@ -282,7 +280,6 @@ void sig_cleanup(int signo)
 void database_check(char* mac_address)
 {
 	char query_buffer[2048];
-	char update_query[2048];
 	
 	sprintf(query_buffer, "SELECT * FROM ARPUserTable WHERE mac_address = '%s'", mac_address);
 	printf("query making success\n");
@@ -301,12 +298,20 @@ void database_check(char* mac_address)
 	}
 	
 		printf("update\n");
-		sprintf(update_query, "UPDATE ARPUserTable SET attendance = 1 WHERE mac_address = '%s'", mac_address);
-		if(mysql_query(conn, update_query))
+		sprintf(query_buffer, "UPDATE ARPUserTable SET attendance = 1 WHERE mac_address = '%s'", mac_address);
+		if(mysql_query(conn, query_buffer))
 		{
 			printf("update fail");
 			exit(1);
 		}
+
+		sprintf(query_buffer, "UPDATE ARPUserTable SET last_check = CURRENT_TIMESTAMP  WHERE mac_address = '%s'", mac_address);
+		if(mysql_query(conn, query_buffer))
+		{
+			printf("update fail");
+			exit(1);
+		}
+
 	printf("update compelete\n");
 	return;
 }
@@ -325,7 +330,7 @@ void check_arp_header(const unsigned char *pkt_data)
     if(eth_type == 0x0806 && Arpopcode == 0x0002)
     {
 		sprintf(mac_addr ,"%02x:%02x:%02x:%02x:%02x:%02x", arpop->ar_sha[0]
-						    , arpop->ar_sha[1]
+						   	, arpop->ar_sha[1]
 						    , arpop->ar_sha[2]
 						    , arpop->ar_sha[3]
 						    , arpop->ar_sha[4]
