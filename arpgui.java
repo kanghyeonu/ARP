@@ -1,29 +1,58 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.awt.event.*;
+import java.sql.*;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
  
 @SuppressWarnings("serial")
 class Browse extends JPanel { // 1번째 패널
  
     private JButton jButton1, jButton2;
-    private JScrollPane jScrollPane1;
-    private JTextArea jTextArea1;
+    private JTable jtable;
+    private JScrollPane scrollpane;
     private JPanelTest win;
  
     public Browse(JPanelTest win) {
+    	
+    	Connection conn = null; 
+        try
+        { 
+        	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL 서버를 설정합니다. 
+			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP","kang","Strong1234%"); 
+			System.out.println("데이터 베이스 접속이 성공했습니다."); 
+			
+			Statement state = conn.createStatement();
+			String query;
+			
+			query = "select * from ARPUserTable";
+			ResultSet result = state.executeQuery(query);
+			
+			while( result.next())
+			{
+				String mac = result.getString("mac_address");
+				String name = result.getString("name");
+				String attendance = result.getString("attendance");
+				String last_check = result.getString("last_check");
+				
+				System.out.println(mac + "\t" + name + "\t" + attendance + "\t" + last_check);
+			}
+			
+		} catch(SQLException ex)
+        { 
+			System.out.println("SQLException:"+ex);
+		} catch(Exception ex)
+		{ 
+			System.out.println("Exception:"+ex); 
+		} finally
+		{ 
+			try
+			{ //데이터베이스 Close 해주기 
+				if ( conn != null)
+				{ 
+					conn.close(); 
+				} 
+			}catch(Exception e){} 
+		} 
+    	
         this.win = win;
         setLayout(null);
  
@@ -37,13 +66,29 @@ class Browse extends JPanel { // 1번째 패널
         jButton2.setLocation(100, 10);
         add(jButton2);
         
-        jTextArea1 = new JTextArea();
- 
-        jScrollPane1 = new JScrollPane(jTextArea1);
-        jScrollPane1.setSize(200, 150);
-        jScrollPane1.setLocation(10, 40);
-        add(jScrollPane1);
- 
+        String header[] = {"MAC 주소", "이름", "출결", "출결 확인 시간"};
+        String contents[][] = 
+        	{
+        			{"강", "현", "우", "1"}
+        	};
+        
+        jtable = new JTable(contents, header);
+        scrollpane = new JScrollPane(jtable);
+        scrollpane.setSize(400, 200);
+        scrollpane.setLocation(10, 40);
+        add(scrollpane);
+        
+        JButton btn3 = new JButton("Browse All");
+        btn3.setSize(120, 20);
+        btn3.setLocation(430, 50);
+        add(btn3);
+        btn3.addActionListener(new ActionListener() {
+        	@Override
+            public void actionPerformed(ActionEvent e) {
+        		
+        	}
+        });
+        
         jButton1.addActionListener(new ActionListener(){
         	 @Override
              public void actionPerformed(ActionEvent e) {
@@ -57,16 +102,18 @@ class Browse extends JPanel { // 1번째 패널
                 win.change("panel01");
        	 }
        });
+        
+        
     }
 }
  
 @SuppressWarnings("serial")
-class Enroll extends JPanel { // 2번째 패널
+class SignUp extends JPanel { // 2번째 패널
     private JTextField macField;
     private JTextField nameField;
     private JPanelTest win;
  
-    public Enroll(JPanelTest win) {
+    public SignUp(JPanelTest win) {
         setLayout(null);
         this.win = win;
         
@@ -109,6 +156,7 @@ class Enroll extends JPanel { // 2번째 패널
                 win.change("panel01");
        	 	}
         });
+
         
         JButton btn3 = new JButton("Send");
         btn3.setSize(90, 20);
@@ -131,14 +179,14 @@ class Enroll extends JPanel { // 2번째 패널
     				if(arr.length != 6)
     				{
     					//입력 포맷 오류
-    					System.out.println("입력포맷오류");
+    					new SendFrame(0, "입력포맷오류");
     					return;
     				}
     				for(int i = 0; i < 6; i++)
     				{
     					if(arr[i].length() != 2)
     					{
-    						System.out.println("입력포맷오류");
+    						new SendFrame(0, "입력포맷오류");
     						return;
     						//입력 포맷 오류
     					}
@@ -146,7 +194,8 @@ class Enroll extends JPanel { // 2번째 패널
     				name = nameField.getText();
     				if(name.length() > 10)
     				{
-    					System.out.println("입력포맷오류");
+    					new SendFrame(0, "입력포맷오류");
+    					
     					return;
     					//입력포맷 오류
     				}
@@ -156,8 +205,10 @@ class Enroll extends JPanel { // 2번째 패널
     				Statement state = conn.createStatement();
     				String query;
     				
-    				query = "INSERT INTO ARPUserTable(mac_address, name) VALUES ("+ mac + "," + name+")";
-    				state.executeQuery(query);
+    				query = "INSERT INTO ARPUserTable(mac_address, name) VALUES ('"+ mac + "','" + name+"')";
+    				state.executeUpdate(query);
+    				
+    				new SendFrame(1, "전송 성공");
     				
         		} catch(SQLException ex)
         		{
@@ -179,38 +230,57 @@ class Enroll extends JPanel { // 2번째 패널
         		
        	 	}
         });
+        
     }
  
 }
- 
+class SendFrame extends JDialog{
+	JLabel ok_label = new JLabel();
+	public SendFrame(int success, String str) {
+		if(success > 0)
+			ok_label.setText(str);
+		else
+			ok_label.setText(str);
+		ok_label.setLocation(100, 50);
+		
+		getContentPane().add(ok_label);
+		
+		this.setSize(200, 100);
+		this.setModal(true);
+		this.setVisible(true);
+	}
+}
  
 @SuppressWarnings("serial")
 class JPanelTest extends JFrame {
  
     public Browse Browse = null;
-    public Enroll Enroll = null;
+    public SignUp signup = null;
     
     JPanelTest(){
     	this.setTitle("Attendance check system");
         this.Browse = new Browse(this);
-        this.Enroll = new Enroll(this);
+        this.signup = new SignUp(this);
  
         this.add(this.Browse);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setSize(500, 300);
+        this.setSize(600, 300);
         this.setVisible(true);
     }
     
     public void change(String panelName) { // 패널 1번과 2번 변경 후 재설정
  
-        if (panelName.equals("panel01")) {
+        if (panelName.equals("panel01")) 
+        {
             getContentPane().removeAll();
             getContentPane().add(Browse);
             revalidate();
             repaint();
-        } else {
+        } 
+        else 
+        {
             getContentPane().removeAll();
-            getContentPane().add(Enroll);
+            getContentPane().add(signup);
             revalidate();
             repaint();
         }
@@ -243,8 +313,9 @@ public class Main {
 				String mac = result.getString("mac_address");
 				String name = result.getString("name");
 				String attendance = result.getString("attendance");
+				String last_check = result.getString("last_check");
 				
-				System.out.println(mac + "\t" + name + "\t" + attendance);
+				System.out.println(mac + "\t" + name + "\t" + attendance + "\t" + last_check);
 			}
 			
 		} catch(SQLException ex)
@@ -252,7 +323,7 @@ public class Main {
 			System.out.println("SQLException:"+ex);
 		} catch(Exception ex)
 		{ 
-					System.out.println("Exception:"+ex); 
+			System.out.println("Exception:"+ex); 
 		} finally
 		{ 
 			try
@@ -262,7 +333,6 @@ public class Main {
 					conn.close(); 
 				} 
 			}catch(Exception e){} 
-
 		} */
     }
 }
