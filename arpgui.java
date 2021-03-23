@@ -1,6 +1,7 @@
 import java.awt.event.*;
 import java.sql.*;
 
+import javax.swing.table.DefaultTableModel;
 import javax.swing.*;
  
 @SuppressWarnings("serial")
@@ -9,11 +10,15 @@ class Browse extends JPanel { // 1번째 패널
     private JButton jButton1, jButton2;
     private JTable jtable;
     private JScrollPane scrollpane;
-    private JPanelTest win;
+    //private JPanelTest win;
+    DefaultTableModel model;
  
     public Browse(JPanelTest win) {
-    	
+    	String columns[] = {"MAC 주소", "이름", "출결", "출결 확인 시간"};
+    	String [][] rows = new String[0][5];
+    	model = new DefaultTableModel(rows, columns);
     	Connection conn = null; 
+    	
         try
         { 
         	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL 서버를 설정합니다. 
@@ -33,6 +38,9 @@ class Browse extends JPanel { // 1번째 패널
 				String attendance = result.getString("attendance");
 				String last_check = result.getString("last_check");
 				
+				String[] row = {mac, name, attendance, last_check};
+				
+				model.addRow(row);
 				System.out.println(mac + "\t" + name + "\t" + attendance + "\t" + last_check);
 			}
 			
@@ -53,7 +61,7 @@ class Browse extends JPanel { // 1번째 패널
 			}catch(Exception e){} 
 		} 
     	
-        this.win = win;
+        //this.win = win;
         setLayout(null);
  
         jButton1 = new JButton("Sign Up");
@@ -66,26 +74,62 @@ class Browse extends JPanel { // 1번째 패널
         jButton2.setLocation(100, 10);
         add(jButton2);
         
-        String header[] = {"MAC 주소", "이름", "출결", "출결 확인 시간"};
-        String contents[][] = 
-        	{
-        			{"강", "현", "우", "1"}
-        	};
-        
-        jtable = new JTable(contents, header);
+        jtable = new JTable(model);
         scrollpane = new JScrollPane(jtable);
-        scrollpane.setSize(400, 200);
+        scrollpane.setSize(500, 200);
         scrollpane.setLocation(10, 40);
         add(scrollpane);
         
-        JButton btn3 = new JButton("Browse All");
-        btn3.setSize(120, 20);
-        btn3.setLocation(430, 50);
+        JButton btn3 = new JButton("Refresh");
+        btn3.setSize(100, 20);
+        btn3.setLocation(520, 50);
         add(btn3);
         btn3.addActionListener(new ActionListener() {
         	@Override
             public void actionPerformed(ActionEvent e) {
-        		
+        		Connection conn = null;
+        		try
+                { 
+        			model.setNumRows(0);
+                	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL 서버를 설정합니다. 
+        			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP","kang","Strong1234%"); 
+        			//System.out.println("데이터 베이스 접속이 성공했습니다."); 
+        			
+        			Statement state = conn.createStatement();
+        			String query;
+        			
+        			query = "select * from ARPUserTable";
+        			ResultSet result = state.executeQuery(query);
+        			
+        			while( result.next())
+        			{
+        				String mac = result.getString("mac_address");
+        				String name = result.getString("name");
+        				String attendance = result.getString("attendance");
+        				String last_check = result.getString("last_check");
+        				
+        				String[] row = {mac, name, attendance, last_check};
+        				
+        				model.addRow(row);
+        				//System.out.println(mac + "\t" + name + "\t" + attendance + "\t" + last_check);
+        			}
+        			
+        		} catch(SQLException ex)
+                { 
+        			System.out.println("SQLException:"+ex);
+        		} catch(Exception ex)
+        		{ 
+        			System.out.println("Exception:"+ex); 
+        		} finally
+        		{ 
+        			try
+        			{ //데이터베이스 Close 해주기 
+        				if ( conn != null)
+        				{ 
+        					conn.close(); 
+        				} 
+        			}catch(Exception E){} 
+        		} 
         	}
         });
         
@@ -111,11 +155,11 @@ class Browse extends JPanel { // 1번째 패널
 class SignUp extends JPanel { // 2번째 패널
     private JTextField macField;
     private JTextField nameField;
-    private JPanelTest win;
+    //private JPanelTest win;
  
     public SignUp(JPanelTest win) {
         setLayout(null);
-        this.win = win;
+       // this.win = win;
         
         /*-----------------------------------------------------------*/
         JLabel input_mac = new JLabel("MAC Address: ");
@@ -264,7 +308,7 @@ class JPanelTest extends JFrame {
  
         this.add(this.Browse);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setSize(600, 300);
+        this.setSize(650, 300);
         this.setVisible(true);
     }
     
