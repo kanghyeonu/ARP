@@ -22,7 +22,7 @@ class Browse extends JPanel { // 1번째 패널
         try
         { 
         	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL 서버를 설정합니다. 
-			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP","kang","Strong1234%"); 
+			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
 			System.out.println("데이터 베이스 접속이 성공했습니다."); 
 			
 			Statement state = conn.createStatement();
@@ -92,7 +92,7 @@ class Browse extends JPanel { // 1번째 패널
                 { 
         			model.setNumRows(0);
                 	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL 서버를 설정합니다. 
-        			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP","kang","Strong1234%"); 
+        			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
         			//System.out.println("데이터 베이스 접속이 성공했습니다."); 
         			
         			Statement state = conn.createStatement();
@@ -214,7 +214,7 @@ class SignUp extends JPanel { // 2번째 패널
         		try
         		{
         			Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL 서버를 설정합니다. 
-    				conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP","kang","Strong1234%"); 
+    				conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
     				//System.out.println("데이터 베이스 접속이 성공했습니다.");
     				/*-----------------입력형식 체크-----------------*/
     				mac = macField.getText();
