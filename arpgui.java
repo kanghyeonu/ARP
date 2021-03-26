@@ -35,13 +35,13 @@ class Browse extends JPanel { // 1번째 패널
 			{
 				String mac = result.getString("mac_address");
 				String name = result.getString("name");
-				String attendance = result.getString("attendance");
+				String status = result.getString("status");
 				String last_check = result.getString("last_check");
 				
-				String[] row = {mac, name, attendance, last_check};
+				String[] row = {mac, name, status, last_check};
 				
 				model.addRow(row);
-				System.out.println(mac + "\t" + name + "\t" + attendance + "\t" + last_check);
+				System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
 			}
 			
 		} catch(SQLException ex)
@@ -105,13 +105,13 @@ class Browse extends JPanel { // 1번째 패널
         			{
         				String mac = result.getString("mac_address");
         				String name = result.getString("name");
-        				String attendance = result.getString("attendance");
+        				String status = result.getString("status");
         				String last_check = result.getString("last_check");
         				
-        				String[] row = {mac, name, attendance, last_check};
+        				String[] row = {mac, name, status, last_check};
         				
         				model.addRow(row);
-        				//System.out.println(mac + "\t" + name + "\t" + attendance + "\t" + last_check);
+        				//System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
         			}
         			
         		} catch(SQLException ex)
@@ -356,10 +356,10 @@ public class Main {
 			{
 				String mac = result.getString("mac_address");
 				String name = result.getString("name");
-				String attendance = result.getString("attendance");
+				String status = result.getString("status");
 				String last_check = result.getString("last_check");
 				
-				System.out.println(mac + "\t" + name + "\t" + attendance + "\t" + last_check);
+				System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
 			}
 			
 		} catch(SQLException ex)
