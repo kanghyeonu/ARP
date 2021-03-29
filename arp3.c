@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <mysql/mysql.h>
+#include <time.h>
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;
@@ -56,6 +57,7 @@ static MYSQL_RES *res;
 static MYSQL_ROW row;
 static int query_stat;
 /*--------------------------------------------*/
+static int comelate;
 //get interface mac addr.
 // ex) interface2mac("eth0", buf)
 // return : 1 success
@@ -279,6 +281,17 @@ void sig_cleanup(int signo)
 
 void database_check(char* mac_address)
 {
+	int hour, min;
+	/*------------------------------------------*/
+	time_t rawTime;
+	struct tm* pTimeInfo;
+
+	rawTime = time(NULL);
+	pTimeInfo = localtime(&rawTime);
+	
+	hour = pTimeInfo->tm_hour;
+	min = pTimeInfo->tm_min;
+	/*------------------------------------------*/
 	char query_buffer[2048];
 	
 	sprintf(query_buffer, "SELECT * FROM ARPUserTable WHERE mac_address = '%s'", mac_address);
@@ -296,23 +309,43 @@ void database_check(char* mac_address)
 		printf("no return\n");
 		return;
 	}
-	
+	/*----------------------------수정합시다------------------------------------*/
+	/* 출근 시간 9 : 00 */
+	// 출근처리
+	if(hour < 9)
+	{
 		printf("update\n");
-		sprintf(query_buffer, "UPDATE ARPUserTable SET attendance = 1 WHERE mac_address = '%s'", mac_address);
+		sprintf(query_buffer, "UPDATE ARPUserTable SET status = '출근'  WHERE mac_address = '%s'", mac_address);
 		if(mysql_query(conn, query_buffer))
 		{
 			printf("update fail");
 			exit(1);
-		}
-
-		sprintf(query_buffer, "UPDATE ARPUserTable SET last_check = CURRENT_TIMESTAMP  WHERE mac_address = '%s'", mac_address);
+		}	
+	}
+	
+	//지각처리
+	else if(hour >= 9 && min > 0   && comelate == 0)
+	{
+		printf("check come late\n");
+		sprintf(query_buffer, "UPDATE ARPUserTable SET status = '지각'");
 		if(mysql_query(conn, query_buffer))
 		{
 			printf("update fail");
 			exit(1);
-		}
+		}	
+		comelate = 1;
+	}
+	
+	sprintf(query_buffer, "UPDATE ARPUserTable SET last_check = CURRENT_TIMESTAMP  WHERE mac_address = '%s'", mac_address);
+	if(mysql_query(conn, query_buffer))
+	{
+		printf("update fail");
+		exit(1);
+	}
 
 	printf("update compelete\n");
+
+	/*-------------------------------------------------------------------*/
 	return;
 }
 
@@ -498,12 +531,12 @@ int main(){
 		exit(1);
 	}
 
-	if(mysql_query(conn, "UPDATE ARPUserTable SET attendance = 0"))
+	if(mysql_query(conn, "UPDATE ARPUserTalbe SET status = '결근'"))
 	{
-		printf("initialize fail\n");
+		printf("initailize fail\nprogram terminate");
 		exit(1);
 	}
-	
+
 	printf("DB init complete\n");
 	printf("mysqlserver connection complete\n");
 
