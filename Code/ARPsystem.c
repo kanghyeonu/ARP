@@ -61,7 +61,7 @@ static int comelate;
 //get interface mac addr.
 // ex) interface2mac("eth0", buf)
 // return : 1 success
-//	  	  : 0 fail
+//	  : 0 fail
 int interface2mac(const char* interface, uchar * mac)  
 {
     int fd = socket(PF_INET,SOCK_STREAM, 0);  //make socket, socket(ipv4,tcp/ip, 0)
@@ -91,7 +91,7 @@ int interface2mac(const char* interface, uchar * mac)
 // get mac address to arp cash
 // exam) get_arp_to_arpcash(ip)
 // return : 1 success
-//	  	  : 0 failure
+//	  : 0 failure
 int get_arp_to_arpcash(unsigned long ip)
 {
     int fd = 0;
@@ -494,12 +494,13 @@ void* Request()
 }
 
 int main(){
-	/*------------------------mysql  변수 및 구조체---------------------------*/
-	char* server = "220.68.54.132";
-	char* user = "kang";
-	char* password = "Strong1234%";
-	char* db_name = "ARP";
-	/*------------------------thread 변수 및 구조체---------------------------*/
+	
+/*------------------------mysql  변수 및 구조체---------------------------*/
+    char* server = "220.68.54.132";
+    char* user = "kang";
+    char* password = "Strong1234%";
+    char* db_name = "ARP";
+/*------------------------thread 변수 및 구조체---------------------------*/
     pthread_t request_thread;
     pthread_t capture_thread;
     pthread_t ui_thread;
