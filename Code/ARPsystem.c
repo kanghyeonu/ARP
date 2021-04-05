@@ -61,7 +61,7 @@ static int comelate;
 //get interface mac addr.
 // ex) interface2mac("eth0", buf)
 // return : 1 success
-//	  : 0 fail
+//	  	  : 0 fail
 int interface2mac(const char* interface, uchar * mac)  
 {
     int fd = socket(PF_INET,SOCK_STREAM, 0);  //make socket, socket(ipv4,tcp/ip, 0)
@@ -91,7 +91,7 @@ int interface2mac(const char* interface, uchar * mac)
 // get mac address to arp cash
 // exam) get_arp_to_arpcash(ip)
 // return : 1 success
-//	  : 0 failure
+//	  	  : 0 failure
 int get_arp_to_arpcash(unsigned long ip)
 {
     int fd = 0;
@@ -279,6 +279,20 @@ void sig_cleanup(int signo)
     exit(0);
 }
 
+char* getMyIP(char* ifName)
+{
+	int fd;
+	struct ifreq ifr;
+
+	fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+	strncpy(ifr.ifr_name, ifName, IFNAMSIZ-1);
+	ioctl(fd, SIOCGIFADDR, &ifr);
+	close(fd);
+	
+	return inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+}
+
 void database_check(char* mac_address)
 {
 	int hour, min;
@@ -315,7 +329,7 @@ void database_check(char* mac_address)
 	if(hour < 9)
 	{
 		printf("update\n");
-		sprintf(query_buffer, "UPDATE ARPUserTable SET status = '출근'  WHERE mac_address = '%s'", mac_address);
+		sprintf(query_buffer, "UPDATE ARPUserTable SET status = 'A'  WHERE mac_address = '%s'", mac_address);
 		if(mysql_query(conn, query_buffer))
 		{
 			printf("update fail");
@@ -324,10 +338,10 @@ void database_check(char* mac_address)
 	}
 	
 	//지각처리
-	else if(hour >= 9 && min > 0   && comelate == 0)
+	else if(hour >= 9 && min > 0  && comelate == 0)
 	{
 		printf("check come late\n");
-		sprintf(query_buffer, "UPDATE ARPUserTable SET status = '지각'");
+		sprintf(query_buffer, "UPDATE ARPUserTable SET status = 'T'");
 		if(mysql_query(conn, query_buffer))
 		{
 			printf("update fail");
@@ -422,13 +436,14 @@ void* Request()
 {
     char target_ip[20];  
     char * subnetmask_ip = "192.168.137.";
+	char * myIP;
     int i, j = 0;
     int inum, res;
     char errbuf[PCAP_ERRBUF_SIZE];
 
     g_interface = malloc(sizeof(char)*20);
     sprintf(g_interface, "%s", dev->name);
-
+	sprintf(myIP, "%s", getMyIP(dev->name));
     //strat while loop
     while(1)
     {
@@ -436,10 +451,11 @@ void* Request()
 		for(i = 1; i < 255; i++)
 		{
 	    	//system("clear");
-	    	if(i == 158)
-				continue;
 
 	    	sprintf(target_ip, "%s%d", subnetmask_ip, i);
+
+			if(strcmp(target_ip, myIP) == 0)
+				continue;
 
 	    	g_source_ip = target_ip;
 
@@ -493,14 +509,14 @@ void* Request()
     close(g_sock);
 }
 
+
 int main(){
-	
-/*------------------------mysql  변수 및 구조체---------------------------*/
-    char* server = "220.68.54.132";
-    char* user = "kang";
-    char* password = "Strong1234%";
-    char* db_name = "ARP";
-/*------------------------thread 변수 및 구조체---------------------------*/
+	/*------------------------mysql  변수 및 구조체---------------------------*/
+	char* server = "220.68.54.132";
+	char* user = "kang";
+	char* password = "Strong1234%";
+	char* db_name = "ARP";
+	/*------------------------thread 변수 및 구조체---------------------------*/
     pthread_t request_thread;
     pthread_t capture_thread;
     pthread_t ui_thread;
@@ -531,13 +547,11 @@ int main(){
 		printf("fail to select database\n");
 		exit(1);
 	}
-
-	if(mysql_query(conn, "UPDATE ARPUserTalbe SET status = '결근'"))
+	if(mysql_query(conn, "UPDATE ARPUserTable SET status = 'Ab'"))
 	{
-		printf("initailize fail\nprogram terminate");
+		printf("database initailize fail\nprogram terminate\n");
 		exit(1);
 	}
-
 	printf("DB init complete\n");
 	printf("mysqlserver connection complete\n");
 
@@ -559,7 +573,7 @@ int main(){
 		else
 	    	printf(" (No  description available)\n");
     }
-
+	
     if(j == 0)
     {
 		printf("\nNo interface found! Make sure LiPcap is installed.\n");
@@ -575,7 +589,7 @@ int main(){
 	return -1;
     }
 
-    for(dev = alldevs, j=0; j < inum-1; dev = dev->next, j++);   
+    for(dev = alldevs, j=0; j < inum-1; dev = dev->next, j++);
 
     thr_id =  pthread_create(&request_thread, NULL,Request, NULL);
     if(thr_id < 0)
