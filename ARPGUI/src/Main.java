@@ -5,7 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.*;
  
 @SuppressWarnings("serial")
-class Browse extends JPanel { // 1ë²ˆì§¸ íŒ¨ë„
+class Browse extends JPanel { // 1¹øÂ° ÆĞ³Î
  
     private JButton jButton1, jButton2;
     private JTable jtable;
@@ -14,23 +14,23 @@ class Browse extends JPanel { // 1ë²ˆì§¸ íŒ¨ë„
     DefaultTableModel model;
  
     public Browse(JPanelTest win) {
-    	String columns[] = {"MAC ì£¼ì†Œ", "ì´ë¦„", "ì¶œê²°", "ì¶œê²° í™•ì¸ ì‹œê°„"};
+    	String columns[] = {"MAC ÁÖ¼Ò", "ÀÌ¸§", "Ãâ°á »óÅÂ", "Ãâ°á È®ÀÎ ½Ã°£"};
     	String [][] rows = new String[0][5];
     	model = new DefaultTableModel(rows, columns);
     	Connection conn = null; 
     	
         try
         { 
-        	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ì„œë²„ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤. 
+        	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ¼­¹ö¸¦ ¼³Á¤ÇÕ´Ï´Ù. 
 			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
-			System.out.println("ë°ì´í„° ë² ì´ìŠ¤ ì ‘ì†ì´ ì„±ê³µí–ˆìŠµë‹ˆë‹¤."); 
+			System.out.println("µ¥ÀÌÅÍ º£ÀÌ½º Á¢¼ÓÀÌ ¼º°øÇß½À´Ï´Ù."); 
 			
 			Statement state = conn.createStatement();
 			String query;
 			
 			query = "select * from ARPUserTable";
 			ResultSet result = state.executeQuery(query);
-			
+			//ÃÖÃÊ ½ÇÇà½Ã ¸ğµç Á¤º¸¸¦ ¶ç¿ò
 			while( result.next())
 			{
 				String mac = result.getString("mac_address");
@@ -53,7 +53,7 @@ class Browse extends JPanel { // 1ë²ˆì§¸ íŒ¨ë„
 		} finally
 		{ 
 			try
-			{ //ë°ì´í„°ë² ì´ìŠ¤ Close í•´ì£¼ê¸° 
+			{ //µ¥ÀÌÅÍº£ÀÌ½º Close ÇØÁÖ±â 
 				if ( conn != null)
 				{ 
 					conn.close(); 
@@ -80,6 +80,7 @@ class Browse extends JPanel { // 1ë²ˆì§¸ íŒ¨ë„
         scrollpane.setLocation(10, 40);
         add(scrollpane);
         
+        //»õ·Î °íÄ§
         JButton btn3 = new JButton("Refresh");
         btn3.setSize(100, 20);
         btn3.setLocation(520, 50);
@@ -91,9 +92,9 @@ class Browse extends JPanel { // 1ë²ˆì§¸ íŒ¨ë„
         		try
                 { 
         			model.setNumRows(0);
-                	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ì„œë²„ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤. 
+                	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ¼­¹ö¸¦ ¼³Á¤ÇÕ´Ï´Ù. 
         			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
-        			//System.out.println("ë°ì´í„° ë² ì´ìŠ¤ ì ‘ì†ì´ ì„±ê³µí–ˆìŠµë‹ˆë‹¤."); 
+        			//System.out.println("µ¥ÀÌÅÍ º£ÀÌ½º Á¢¼ÓÀÌ ¼º°øÇß½À´Ï´Ù."); 
         			
         			Statement state = conn.createStatement();
         			String query;
@@ -123,7 +124,61 @@ class Browse extends JPanel { // 1ë²ˆì§¸ íŒ¨ë„
         		} finally
         		{ 
         			try
-        			{ //ë°ì´í„°ë² ì´ìŠ¤ Close í•´ì£¼ê¸° 
+        			{ //µ¥ÀÌÅÍº£ÀÌ½º Close ÇØÁÖ±â 
+        				if ( conn != null)
+        				{ 
+        					conn.close(); 
+        				} 
+        			}catch(Exception E){} 
+        		} 
+        	}
+        });
+        
+        JButton btn4 = new JButton("Search");
+        btn4.setSize(100, 20);
+        btn4.setLocation(520, 80);
+        add(btn4);
+        btn4.addActionListener(new ActionListener() {
+        	@Override
+            public void actionPerformed(ActionEvent e) {
+        		Connection conn = null;
+        		try
+                { 
+        			model.setNumRows(0);	//row Áö¿ì±â
+                	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ¼­¹ö¸¦ ¼³Á¤ÇÕ´Ï´Ù. 
+        			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
+        			//System.out.println("µ¥ÀÌÅÍ º£ÀÌ½º Á¢¼ÓÀÌ ¼º°øÇß½À´Ï´Ù."); 
+        			
+        			Statement state = conn.createStatement();
+        			String query;
+        			
+        			//
+        			query = "select * from ARPUserTable where ";
+        			ResultSet result = state.executeQuery(query);
+        			
+        			while( result.next())
+        			{
+        				String mac = result.getString("mac_address");
+        				String name = result.getString("name");
+        				String status = result.getString("status");
+        				String last_check = result.getString("last_check");
+        				
+        				String[] row = {mac, name, status, last_check};
+        				
+        				model.addRow(row);
+        				//System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
+        			}
+        			
+        		} catch(SQLException ex)
+                { 
+        			System.out.println("SQLException:"+ex);
+        		} catch(Exception ex)
+        		{ 
+        			System.out.println("Exception:"+ex); 
+        		} finally
+        		{ 
+        			try
+        			{ //µ¥ÀÌÅÍº£ÀÌ½º Close ÇØÁÖ±â 
         				if ( conn != null)
         				{ 
         					conn.close(); 
@@ -152,7 +207,7 @@ class Browse extends JPanel { // 1ë²ˆì§¸ íŒ¨ë„
 }
  
 @SuppressWarnings("serial")
-class SignUp extends JPanel { // 2ë²ˆì§¸ íŒ¨ë„
+class SignUp extends JPanel { // 2¹øÂ° ÆĞ³Î
     private JTextField macField;
     private JTextField nameField;
     //private JPanelTest win;
@@ -213,46 +268,46 @@ class SignUp extends JPanel { // 2ë²ˆì§¸ íŒ¨ë„
         		Connection conn = null; 
         		try
         		{
-        			Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ì„œë²„ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤. 
+        			Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ¼­¹ö¸¦ ¼³Á¤ÇÕ´Ï´Ù. 
     				conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
-    				//System.out.println("ë°ì´í„° ë² ì´ìŠ¤ ì ‘ì†ì´ ì„±ê³µí–ˆìŠµë‹ˆë‹¤.");
-    				/*-----------------ì…ë ¥í˜•ì‹ ì²´í¬-----------------*/
+    				//System.out.println("µ¥ÀÌÅÍ º£ÀÌ½º Á¢¼ÓÀÌ ¼º°øÇß½À´Ï´Ù.");
+    				/*-----------------ÀÔ·ÂÇü½Ä Ã¼Å©-----------------*/
     				mac = macField.getText();
     				
     				String[] arr = mac.split(":");
     				if(arr.length != 6)
     				{
-    					//ì…ë ¥ í¬ë§· ì˜¤ë¥˜
-    					new SendFrame(0, "ì…ë ¥í¬ë§·ì˜¤ë¥˜");
+    					//ÀÔ·Â Æ÷¸Ë ¿À·ù
+    					new SendFrame(0, "ÀÔ·ÂÆ÷¸Ë¿À·ù");
     					return;
     				}
     				for(int i = 0; i < 6; i++)
     				{
     					if(arr[i].length() != 2)
     					{
-    						new SendFrame(0, "ì…ë ¥í¬ë§·ì˜¤ë¥˜");
+    						new SendFrame(0, "ÀÔ·ÂÆ÷¸Ë¿À·ù");
     						return;
-    						//ì…ë ¥ í¬ë§· ì˜¤ë¥˜
+    						//ÀÔ·Â Æ÷¸Ë ¿À·ù
     					}
     				}
     				name = nameField.getText();
     				if(name.length() > 10)
     				{
-    					new SendFrame(0, "ì…ë ¥í¬ë§·ì˜¤ë¥˜");
+    					new SendFrame(0, "ÀÔ·ÂÆ÷¸Ë¿À·ù");
     					
     					return;
-    					//ì…ë ¥í¬ë§· ì˜¤ë¥˜
+    					//ÀÔ·ÂÆ÷¸Ë ¿À·ù
     				}
     				/*--------------------------------------------*/
     				
-    				/*-------------------ì¿¼ë¦¬ì „ì†¡--------------------*/
+    				/*-------------------Äõ¸®Àü¼Û--------------------*/
     				Statement state = conn.createStatement();
     				String query;
     				
     				query = "INSERT INTO ARPUserTable(mac_address, name) VALUES ('"+ mac + "','" + name+"')";
     				state.executeUpdate(query);
     				
-    				new SendFrame(1, "ì „ì†¡ ì„±ê³µ");
+    				new SendFrame(1, "Àü¼Û ¼º°ø");
     				
         		} catch(SQLException ex)
         		{
@@ -264,7 +319,7 @@ class SignUp extends JPanel { // 2ë²ˆì§¸ íŒ¨ë„
         		} finally
         		{ 
         			try
-        			{ //ë°ì´í„°ë² ì´ìŠ¤ Close í•´ì£¼ê¸° 
+        			{ //µ¥ÀÌÅÍº£ÀÌ½º Close ÇØÁÖ±â 
         				if ( conn != null)
         				{ 
         					conn.close(); 
@@ -312,7 +367,7 @@ class JPanelTest extends JFrame {
         this.setVisible(true);
     }
     
-    public void change(String panelName) { // íŒ¨ë„ 1ë²ˆê³¼ 2ë²ˆ ë³€ê²½ í›„ ì¬ì„¤ì •
+    public void change(String panelName) { // ÆĞ³Î 1¹ø°ú 2¹ø º¯°æ ÈÄ Àç¼³Á¤
  
         if (panelName.equals("panel01")) 
         {
@@ -342,9 +397,9 @@ public class Main {
         /*Connection conn = null; 
         try
         { 
-        	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ì„œë²„ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤. 
+        	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ¼­¹ö¸¦ ¼³Á¤ÇÕ´Ï´Ù. 
 			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP","kang","Strong1234%"); 
-			System.out.println("ë°ì´í„° ë² ì´ìŠ¤ ì ‘ì†ì´ ì„±ê³µí–ˆìŠµë‹ˆë‹¤."); 
+			System.out.println("µ¥ÀÌÅÍ º£ÀÌ½º Á¢¼ÓÀÌ ¼º°øÇß½À´Ï´Ù."); 
 			
 			Statement state = conn.createStatement();
 			String query;
@@ -371,7 +426,7 @@ public class Main {
 		} finally
 		{ 
 			try
-			{ //ë°ì´í„°ë² ì´ìŠ¤ Close í•´ì£¼ê¸° 
+			{ //µ¥ÀÌÅÍº£ÀÌ½º Close ÇØÁÖ±â 
 				if ( conn != null)
 				{ 
 					conn.close(); 
