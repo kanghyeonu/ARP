@@ -7,12 +7,11 @@ ip주소와 mac 주소를 매핑하여 arp 테이블만들어 로컬 네트워�
 2. ARP request를 받은 디바이스는 응답하여 ARP reply 패킷에 자신의 mac 주소를 담아서 request를 보낸 디바이스에게 전송한다.
 3. ARP reply를 받은 디바이스는 해당 패킷에 들어있는 mac 주소를 자신의 ARP table에 업데이트한다.
 
-- ARP를 이용한 출결관리 시스템
-
-
 ## 사용법
-ARP 전송
-사용할 네트워크 인터페이스를 숫자 입력으로 입력받아 해당 네트워크를 사용하고 있는 사용자들의 출결관리를 자동으로 한다.
+ARP 출결 체크 프로그램
+환경: Ubuntu linux 18.04 LTS 무선 LAN 카드로 로컬 네트워크 접속(추후 추가)
+
+1. sudo ./arpsystem
 
 ARP GUI
 
