@@ -10,7 +10,7 @@ ip주소와 mac 주소를 매핑하여 arp 테이블만들어 로컬 네트워�
 ## 사용법
 ARP 출결 체크 프로그램
 
-실행환경: VMware 가상머신 상에서 Ubuntu linux 18.04 LTS 무선 LAN 카드로 로컬 네트워크 접속(추후 추가)
+실행환경: VMware 가상머신 상에서 Ubuntu linux 18.04 LTS 무선 LAN 카드(Realtek RTL8188EU Wireless LAN 802.11n USB 2.0 Network Adapter)로 을 이용하여 로컬 네트워크 접속
 
 1. gcc -o arpsystem arpsystem.c -lpcap -lpthread -lmysqlclient (컴파일)
 2. sudo ./arpsystem (실행)
@@ -23,4 +23,6 @@ Mac address에 xx:xx:xx:xx:xx:xx 포맷의 형태로 맥 주소 입력 및 이�
 * Browse
 기본적으로 refresh 버튼을 누르면 데이터베이스 내의 모든 칼럼을 출력
 추후 추가
---
+
+* 주의 사항
+- 해당 로컬 네트워크에 접속 시 와이파이 연결옵션에서 MAC 주소 유형을 랜덤 MAC이 아닌 휴대전화 MAC으로 설정 해두어야 함
