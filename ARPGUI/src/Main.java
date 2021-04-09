@@ -14,12 +14,14 @@ class Browse extends JPanel {
     
     String combo_status[] = {"선택없음", "출근","지각","결근", "등록", }; 
     String mapping[] = { "", "'A'", "'T'", "'Ab'", "'S'"};
+    String select = "선택없음";
+    int index = 0;
     
     public Connection conn = null;
     
     public Browse(JPanelTest win) {
     	String columns[] = {"MAC 주소", "이름", "출결 상태", "마지막 확인 시간"};    	
-    	String [][] rows = new String[0][5];
+    	String [][] rows = new String[0][4];
     	
     	model = new DefaultTableModel(rows, columns);    	
         try
@@ -30,7 +32,6 @@ class Browse extends JPanel {
 			Statement state = conn.createStatement();
 			String query;
 			
-			
 			query = "select * from ARPUserTable";
 			ResultSet result = state.executeQuery(query);
 			//출력부분
@@ -40,6 +41,24 @@ class Browse extends JPanel {
 				String name = result.getString("name");
 				String status = result.getString("status");
 				String last_check = result.getString("last_check");
+				
+				switch(status)
+				{
+					case "A":
+						status = "출근";
+						break;
+					case "Ab":
+						status = "결근";
+						break;
+					case "T":
+						status = "지각";
+						break;
+					case "S":
+						status = "등록";
+						break;
+						
+				}
+					
 				
 				String[] row = {mac, name, status, last_check};
 				
@@ -92,27 +111,52 @@ class Browse extends JPanel {
         	@Override
             public void actionPerformed(ActionEvent e) {
         		try
-                { 
-        			model.setNumRows(0);
-                	Class.forName("com.mysql.cj.jdbc.Driver"); 
-        			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
-        			
-        			Statement state = conn.createStatement();
-        			String query;
-        			
-        			query = "select * from ARPUserTable";
-        			ResultSet result = state.executeQuery(query);
-        			
-        			while( result.next())
-        			{
-        				String mac = result.getString("mac_address");
-        				String name = result.getString("name");
-        				String status = result.getString("status");
-        				String last_check = result.getString("last_check");
-        				
-        				String[] row = {mac, name, status, last_check};
-        				
-        				model.addRow(row);
+        		{
+        			model.setNumRows(0);	//row 비움
+	        		
+	            	Class.forName("com.mysql.cj.jdbc.Driver");
+	    			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
+	    			
+	    			Statement state = conn.createStatement();
+	    			String query;
+	    			
+	    			if(index == 0)
+	    				query = "select * from ARPUserTable";
+	    			
+	    			else
+	    				query = "select * from ARPUserTable where status = " + select;
+	    			
+	    			ResultSet result = state.executeQuery(query);
+	    			
+	    			while( result.next())
+	    			{
+	    				String mac = result.getString("mac_address");
+	    				String name = result.getString("name");
+	    				String status = result.getString("status");
+	    				String last_check = result.getString("last_check");
+	    				
+	    				switch(status)
+	    				{
+	    					case "A":
+	    						status = "출근";
+	    						break;
+	    					case "Ab":
+	    						status = "결근";
+	    						break;
+	    					case "T":
+	    						status = "지각";
+	    						break;
+	    					case "S":
+	    						status = "등록";
+	    						break;
+	    						
+	    				}
+	    					
+	    				
+	    				String[] row = {mac, name, status, last_check};
+	    				
+	    				model.addRow(row);
+
         				//System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
         			}
         			
@@ -134,6 +178,7 @@ class Browse extends JPanel {
         		} 
         	}
         });
+        
         JLabel Jlabel = new JLabel("Search Option");
         Jlabel.setSize(100, 20);
         Jlabel.setLocation(520, 80);
@@ -149,8 +194,8 @@ class Browse extends JPanel {
         		try
                 { 
 	        		JComboBox<?> cb = (JComboBox<?>)e.getSource();
-	        		int index = cb.getSelectedIndex();
-	        		String select = mapping[index];
+	        		index = cb.getSelectedIndex();
+	        		select = mapping[index];
 	        		
 	        		model.setNumRows(0);	//row 비움
 	        		
@@ -174,6 +219,24 @@ class Browse extends JPanel {
 	    				String name = result.getString("name");
 	    				String status = result.getString("status");
 	    				String last_check = result.getString("last_check");
+	    				
+	    				switch(status)
+	    				{
+	    					case "A":
+	    						status = "출근";
+	    						break;
+	    					case "Ab":
+	    						status = "결근";
+	    						break;
+	    					case "T":
+	    						status = "지각";
+	    						break;
+	    					case "S":
+	    						status = "등록";
+	    						break;
+	    						
+	    				}
+	    					
 	    				
 	    				String[] row = {mac, name, status, last_check};
 	    				
@@ -363,12 +426,12 @@ class SendFrame extends JDialog{
 class JPanelTest extends JFrame {
  
     public Browse Browse = null;
-    public SignUp signup = null;
+    public SignUp Signup = null;
     
     JPanelTest(){
     	this.setTitle("Attendance check system");
         this.Browse = new Browse(this);
-        this.signup = new SignUp(this);
+        this.Signup = new SignUp(this);
  
         this.add(this.Browse);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -388,7 +451,7 @@ class JPanelTest extends JFrame {
         else 
         {
             getContentPane().removeAll();
-            getContentPane().add(signup);
+            getContentPane().add(Signup);
             revalidate();
             repaint();
         }
