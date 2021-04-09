@@ -11,15 +11,17 @@ class Browse extends JPanel {
     private JScrollPane scrollpane;
     //private JPanelTest win;
     DefaultTableModel model;
-    String combo_status[] = {"출근","지각","결근", "등록"};
-    String mapping[] = {"'A'", "'T'", "'Ab'", "'S'"};
+    
+    String combo_status[] = {"선택없음", "출근","지각","결근", "등록", }; 
+    String mapping[] = { "", "'A'", "'T'", "'Ab'", "'S'"};
+    
+    public Connection conn = null;
+    
     public Browse(JPanelTest win) {
     	String columns[] = {"MAC 주소", "이름", "출결 상태", "마지막 확인 시간"};    	
     	String [][] rows = new String[0][5];
     	
-    	model = new DefaultTableModel(rows, columns);
-    	Connection conn = null; 
-    	
+    	model = new DefaultTableModel(rows, columns);    	
         try
         { 
         	Class.forName("com.mysql.cj.jdbc.Driver");
@@ -42,7 +44,7 @@ class Browse extends JPanel {
 				String[] row = {mac, name, status, last_check};
 				
 				model.addRow(row);
-				System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
+				//System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
 			}
 			
 		} catch(SQLException ex)
@@ -89,7 +91,6 @@ class Browse extends JPanel {
         btn3.addActionListener(new ActionListener() {
         	@Override
             public void actionPerformed(ActionEvent e) {
-        		Connection conn = null;
         		try
                 { 
         			model.setNumRows(0);
@@ -145,7 +146,6 @@ class Browse extends JPanel {
         combo.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-        		Connection conn = null;
         		try
                 { 
 	        		JComboBox<?> cb = (JComboBox<?>)e.getSource();
@@ -160,8 +160,12 @@ class Browse extends JPanel {
 	    			Statement state = conn.createStatement();
 	    			String query;
 	    			
-	    			//
-	    			query = "select * from ARPUserTable where status = " + select;
+	    			if(index == 0)
+	    				query = "select * from ARPUserTable";
+	    			
+	    			else
+	    				query = "select * from ARPUserTable where status = " + select;
+	    			
 	    			ResultSet result = state.executeQuery(query);
 	    			
 	    			while( result.next())
@@ -195,58 +199,6 @@ class Browse extends JPanel {
 	    		} 
         	}
         });
-        
-        
-        
-       /* btn4.addActionListener(new ActionListener() {
-        	@Override
-            public void actionPerformed(ActionEvent e) {
-        		Connection conn = null;
-        		try
-                { 
-        			model.setNumRows(0);	//row 비움
-                	Class.forName("com.mysql.cj.jdbc.Driver");
-        			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
-        			
-        			Statement state = conn.createStatement();
-        			String query;
-        			
-        			//
-        			query = "select * from ARPUserTable where ";
-        			ResultSet result = state.executeQuery(query);
-        			
-        			while( result.next())
-        			{
-        				String mac = result.getString("mac_address");
-        				String name = result.getString("name");
-        				String status = result.getString("status");
-        				String last_check = result.getString("last_check");
-        				
-        				String[] row = {mac, name, status, last_check};
-        				
-        				model.addRow(row);
-        				//System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
-        			}
-        			
-        		} catch(SQLException ex)
-                { 
-        			System.out.println("SQLException:"+ex);
-        		} catch(Exception ex)
-        		{ 
-        			System.out.println("Exception:"+ex); 
-        		} finally
-        		{ 
-        			try
-        			{
-        				if ( conn != null)
-        				{ 
-        					conn.close(); 
-        				} 
-        			}catch(Exception E){} 
-        		} 
-        	}
-        });*/
-        
         
         jButton1.addActionListener(new ActionListener(){
         	 @Override
