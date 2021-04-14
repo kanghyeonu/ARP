@@ -4,6 +4,63 @@ import java.sql.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.*;
  
+class MysqlConnecter{
+	private Connection conn = null;
+	private String query;
+	MysqlConnecter(){
+		try 
+		{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%");
+		} catch(SQLException ex)
+        { 
+			System.out.println("SQLException:"+ex);
+		} catch(Exception ex)
+		{ 
+			System.out.println("Exception:"+ex); 
+		} finally
+		{ 
+			try
+			{ 
+				if ( conn != null)
+				{ 
+					conn.close(); 
+				} 
+			}catch(Exception e){}
+		}
+	}
+		
+	public ResultSet BrowseAll() {
+		try 
+		{
+			Statement state = conn.createStatement();
+			
+			query = "select * from ARPUserTable";
+			ResultSet result = state.executeQuery(query);
+			
+			return result;
+			
+		}catch(SQLException ex)
+        { 
+			System.out.println("SQLException:"+ex);
+		} catch(Exception ex)
+		{ 
+			System.out.println("Exception:"+ex); 
+		} finally
+		{ 
+			try
+			{ 
+				if ( conn != null)
+				{ 
+					conn.close(); 
+				} 
+			}catch(Exception e){}
+		}
+		
+		return null;
+	}
+}
+
 class Browse extends JPanel { 
  
     private JButton jButton1, jButton2;
