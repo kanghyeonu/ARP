@@ -313,7 +313,6 @@ void database_check(char* mac_address)
 		exit(1);
 	}
 	printf("query ok\n");
-	printf("realtime hour : %d\n", hour);
 	res = mysql_store_result(conn);
 
 	if((row = mysql_fetch_row(res)) == NULL)
@@ -590,11 +589,8 @@ int main(){
 		return -1;
     }
 
-	printf("network interface select complete");
     for(dev = alldevs, j=0; j < inum-1; dev = dev->next, j++);
 	
-	printf("network interface select complete");
-
     thr_id =  pthread_create(&request_thread, NULL,Request, NULL);
     if(thr_id < 0)
     {
