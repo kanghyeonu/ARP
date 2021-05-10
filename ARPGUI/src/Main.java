@@ -22,7 +22,7 @@ class Browse extends JPanel {
     
     public Connection conn = null;
     
-    public Browse(JPanelTest win) {
+    public Browse(JPanelMain win) {
     	String columns[] = {"MAC 주소", "이름", "출결 상태", "마지막 확인 시간"};    	
     	String [][] rows = new String[0][4];
     	
@@ -303,7 +303,7 @@ class SignUp extends JPanel {
     private Connection conn = null; 
     private int row;
  
-    public SignUp(JPanelTest win) {
+    public SignUp(JPanelMain win) {
         setLayout(null);
        // this.win = win;
         String columns[] = {"MAC 주소", "이름"};    	
@@ -392,7 +392,6 @@ class SignUp extends JPanel {
        	 	}
         });
 
-        
         JButton btn3 = new JButton("Send");
         btn3.setSize(90, 20);
         btn3.setLocation(130, 150);
@@ -487,7 +486,6 @@ class SignUp extends JPanel {
         jtable.addMouseListener(new mouseEventListener());
         add(scrollpane);
         
-        /* 행 선택 후 라인삭제 추가해야 */
         JButton btn4 = new JButton("Delete");
         btn4.setSize(90, 20);
         btn4.setLocation(400, 220);
@@ -509,8 +507,11 @@ class SignUp extends JPanel {
 				Statement state = conn.createStatement();
 				String query;
 				
-				query = "delete from ARPUserTable where mac_address = " + "'" + delete_mac + "'";
-				state.executeUpdate(query);
+				if(row != 0)
+				{
+					query = "delete from ARPUserTable where mac_address = " + "'" + delete_mac + "'";
+					state.executeUpdate(query);
+				}
 
 				query = "select * from ARPUserTable";
 				
@@ -546,65 +547,13 @@ class SignUp extends JPanel {
 			} 
 		}
         });
-        
-        /*JButton btn5 = new JButton("refresh");
-        btn5.setSize(90, 20);
-        btn5.setLocation(460, 220);
-        add(btn5);
-        btn5.addActionListener(new ActionListener() {
-        	@Override
-            public void actionPerformed(ActionEvent e) {
-        	Connection conn = null;
-			try 
-        	{
-	        	model.setNumRows(0);	//row 비움
-	    		
-	        	Class.forName("com.mysql.cj.jdbc.Driver");
-				conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP?useUnicode=true&characterEncoding=utf8","kang","Strong1234%"); 
-				
-				Statement state = conn.createStatement();
-				String query;
-
-				query = "select * from ARPUserTable";
-				ResultSet result = state.executeQuery(query);
-			
-				while( result.next())
-				{
-					String mac = result.getString("mac_address");
-					String name = result.getString("name");	
-					
-					String[] row = {mac, name};
-					
-					model.addRow(row);
-	
-					//System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
-				}
-				
-			} catch(SQLException ex)
-	        { 
-				System.out.println("SQLException:"+ex);
-			} catch(Exception ex)
-			{ 
-				System.out.println("Exception:"+ex); 
-			} finally
-			{ 
-				try
-				{ 
-					if ( conn != null)
-					{ 
-						conn.close(); 
-					} 
-				}catch(Exception E){} 
-			} 
-		}
-        });*/
     }
 
     private class mouseEventListener extends MouseAdapter{
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			row = jtable.getSelectedRow();
-			System.out.println(row);
+			//System.out.println(row);
 		}	
 	
 		@Override
@@ -650,12 +599,12 @@ class SendFrame extends JDialog{
 	}
 }
  
-class JPanelTest extends JFrame {
+class JPanelMain extends JFrame {
  
     public Browse Browse = null;
     public SignUp Signup = null;
     
-    JPanelTest(){
+    JPanelMain(){
     	this.setTitle("Attendance check system");
         this.Browse = new Browse(this);
         this.Signup = new SignUp(this);
@@ -699,46 +648,6 @@ class JPanelTest extends JFrame {
 public class Main {
     public static void main(String[] args) {
    
-    	new JPanelTest();
-   	  
-        /*Connection conn = null; 
-        try
-        { 
-        	Class.forName("com.mysql.cj.jdbc.Driver"); //MySQL ������ �����մϴ�. 
-			conn = DriverManager.getConnection("jdbc:mysql://220.68.54.132:3306/ARP","kang","Strong1234%"); 
-			System.out.println("������ ���̽� ������ �����߽��ϴ�."); 
-			
-			Statement state = conn.createStatement();
-			String query;
-			
-			query = "select * from ARPUserTable";
-			ResultSet result = state.executeQuery(query);
-			
-			while( result.next())
-			{
-				String mac = result.getString("mac_address");
-				String name = result.getString("name");
-				String status = result.getString("status");
-				String last_check = result.getString("last_check");
-				
-				System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
-			}
-			
-		} catch(SQLException ex)
-        { 
-			System.out.println("SQLException:"+ex);
-		} catch(Exception ex)
-		{ 
-			System.out.println("Exception:"+ex); 
-		} finally
-		{ 
-			try
-			{ //�����ͺ��̽� Close ���ֱ� 
-				if ( conn != null)
-				{ 
-					conn.close(); 
-				} 
-			}catch(Exception e){} 
-		} */
+    	new JPanelMain();
     }
 }
