@@ -25,22 +25,22 @@ struct eth_hdr
 {
     uchar h_dest[6];	// destination ether addr
     uchar h_source[6];	// source ether addr
-    ushort h_proto;	// packet type ID field
+    ushort h_proto;		// packet type ID field
 }__attribute__((packed));
 static const int ETHERNET_SIZE = sizeof(struct eth_hdr);
 
-//ARP Header
+/* ARP Header */
 struct arp_hdr
 {
-    ushort ar_hrd;  //H/W type : ethernet
-    ushort ar_pro;  //Protocol
-    uchar ar_hln;   //H/W size
-    uchar ar_pln;   //Protocal size
-    ushort ar_op;   //Opcode replay
-    uchar ar_sha[6];//sender MAC
-    uchar ar_sip[4];//sender IP
-    uchar ar_tha[6];//target MAC
-    uchar ar_tip[4];//target IP
+    ushort ar_hrd;  	//H/W type : ethernet
+    ushort ar_pro;  	//Protocol
+    uchar ar_hln;   	//H/W size
+    uchar ar_pln;   	//Protocal size
+    ushort ar_op;   	//Opcode replay
+    uchar ar_sha[6];	//sender MAC
+    uchar ar_sip[4];	//sender IP
+    uchar ar_tha[6];	//target MAC
+    uchar ar_tip[4];	//target IP
 }__attribute__((packed));
 static const int ARP_SIZE = sizeof(struct arp_hdr);
 
@@ -292,7 +292,7 @@ char* getMyIP(char* interface)
 	return inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
 }
 
-void database_check(char* mac_address)
+void database_update(char* mac_address)
 {
 	int hour, min;
 	/*------------------------------------------*/
@@ -357,7 +357,6 @@ void database_check(char* mac_address)
 
 	printf("update compelete\n");
 
-	/*-------------------------------------------------------------------*/
 	return;
 }
 
@@ -381,7 +380,7 @@ void check_arp_header(const unsigned char *pkt_data)
 						    , arpop->ar_sha[4]
 						    , arpop->ar_sha[5]);
 		printf("\n%s\n", mac_addr);
-		database_check(mac_addr);	
+		database_update(mac_addr);	
     }
 
 }
@@ -424,8 +423,6 @@ void* Sniff()
 
 		check_arp_header(pkt_data);
     }
-
-   // printf("asdf");
 }
 /*-------------------------------------------------------------------------------*/
 //ip addr 192.168.137.xxx subnetmask 255.255.255.0
@@ -447,11 +444,9 @@ void* Request()
     //strat while loop
     while(1)
     {
-	//make ip addr (192.168.137. 1 ~ 192.168.137.254)
+		//make ip addr (192.168.137. 1 ~ 192.168.137.254)
 		for(i = 1; i < 255; i++)
 		{
-	    	//system("clear");
-
 	    	sprintf(target_ip, "%s%d", subnetmask_ip, i);
 
 			if(strcmp(target_ip, myIP) == 0)
