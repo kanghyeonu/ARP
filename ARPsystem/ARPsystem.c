@@ -320,8 +320,6 @@ void database_update(char* mac_address)
 		printf("no return\n");
 		return;
 	}
-	/*----------------------------수정합시다------------------------------------*/
-	/* 출근 시간 9 : 00 */
 	if(strcmp(row[2], "Ab") == 0)
 	{
 		//출근처리
@@ -363,15 +361,12 @@ void database_update(char* mac_address)
 void check_arp_header(const unsigned char *pkt_data)
 {
     char mac_addr[20];
-    struct eth_hdr  *eth;
-    eth = (struct eth_hdr *)pkt_data;
-    unsigned short eth_type;
-    eth_type = ntohs(eth->h_proto);
     struct arp_hdr *arpop;
     arpop = (struct arp_hdr *)(pkt_data+14);
     unsigned short Arpopcode = ntohs(arpop->ar_op);
-
-    if(eth_type == 0x0806 && Arpopcode == 0x0002)
+	
+	//only capturing reply packet
+    if(Arpopcode == 0x0002)
     {
 		sprintf(mac_addr ,"%02x:%02x:%02x:%02x:%02x:%02x", arpop->ar_sha[0]
 						   	, arpop->ar_sha[1]
@@ -393,7 +388,7 @@ void* Sniff()
    pcap_if_t* d;
    pcap_t *adhandle;
    char errbuf[PCAP_ERRBUF_SIZE];
-   char packet_filter[] = "";
+   char packet_filter[] = "arp";
    struct bpf_program fcode;
 
    if((adhandle = pcap_open_live(dev->name, 42, 0, 1000, errbuf))== NULL)
@@ -600,21 +595,6 @@ int main(){
 		exit(0);
     }
 	
-	
-    /*while(1)
-	{
-		/*system("clear");
-		printf("1. program termination\n---------------------------\n");
-		printf("enter key: ");
-		scanf("%d", &input);
-		if(input == 1)
-		{
-			pthread_cancel(request_thread);
-			pthread_cancel(capture_thread);
-			break;
-		}
-	}*/
-
     pthread_join(request_thread, (void**)&status);
     pthread_join(capture_thread, (void**)&status);
     return 0;
