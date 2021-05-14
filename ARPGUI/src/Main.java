@@ -296,7 +296,6 @@ class Browse extends JPanel {
 class SignUp extends JPanel { 
     private JTextField macField;
     private JTextField nameField;
-    //private JPanelTest win;
     private DefaultTableModel model;
     private JTable jtable;
     private JScrollPane scrollpane;
