@@ -306,13 +306,11 @@ void database_update(char* mac_address)
 	char query_buffer[2048];
 	
 	sprintf(query_buffer, "SELECT * FROM ARPUserTable WHERE mac_address = '%s'", mac_address);
-	printf("query making success\n");
 	if(mysql_query(conn, query_buffer))
 	{
 		printf("fail to sending query");
 		exit(1);
 	}
-	printf("query ok\n");
 	res = mysql_store_result(conn);
 
 	if((row = mysql_fetch_row(res)) == NULL)
@@ -325,7 +323,7 @@ void database_update(char* mac_address)
 		//출근처리
 		if(hour < 9)
 		{
-			printf("check attendance\n");
+			printf("Checking Attendance\n");
 			sprintf(query_buffer, "UPDATE ARPUserTable SET status = 'A'  WHERE mac_address = '%s'", mac_address);
 			if(mysql_query(conn, query_buffer))
 			{
@@ -337,7 +335,7 @@ void database_update(char* mac_address)
 		//지각처리
 		else
 		{
-			printf("check come late\n");
+			printf("Checking Being Late\n");
 			sprintf(query_buffer, "UPDATE ARPUserTable SET status = 'T'");
 			if(mysql_query(conn, query_buffer))
 			{
@@ -353,7 +351,7 @@ void database_update(char* mac_address)
 		exit(1);
 	}
 
-	printf("update compelete\n");
+	printf("Update Compelete\n");
 
 	return;
 }
