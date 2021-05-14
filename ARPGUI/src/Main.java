@@ -456,6 +456,8 @@ class SignUp extends JPanel {
     	
     					//System.out.println(mac + "\t" + name + "\t" + status + "\t" + last_check);
     				}
+    				macField.setText("");
+    				nameField.setText("");
     				
         		} catch(SQLException ex)
         		{
