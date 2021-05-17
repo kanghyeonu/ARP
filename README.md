@@ -15,6 +15,7 @@ ARP 출결 체크 프로그램
 2. sudo ./ARPsystem (실행)
 3. 사용하는 네트워크 인터페이스를 번호 입력 후 enter (네트워크인터페이스 선택)
 4. 선택된 네트워크에 ARP Request 브로드캐스트
+5. ARP Reply를 받으면 해당 Reply에서 MAC주소 추출 후 데이터베이스 조회 후 목록에 존재하면 해당 MAC 
 
 ARP GUI
 * Admin 탭 (데이터베이스에 데이터 추가 및 삭제)
