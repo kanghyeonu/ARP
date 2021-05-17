@@ -4,7 +4,7 @@ ARP(Address Resolution Protocol)는 IP 주소를 기반으로 MAC 주소를 알�
 - ARP 프로토콜의 흐름
 1. 디바이스는 로컬 네트워크에 연결되어있는 다른 디바이스의 mac 주소를 알아내기 ARP request를 해당 로컬 네트워크에 mac 주소를 알려는 ip주소를 기반으로 브로드캐스트를 한다.
 2. ARP request를 받은 디바이스는 응답하여 ARP reply 패킷에 자신의 mac 주소를 담아서 request를 보낸 디바이스에게 전송한다.
-3. ARP reply를 받은 디바이스는 해당 패킷에 들어있는 mac 주소를 자신의 ARP table에  업데이트한다.
+3. ARP reply를 받은 디바이스는 해당 패킷에 들어있는 mac 주소를 추출하여 알아내려는 목적지 IP 주소를 가진 MAC주소를 알아낸다.
 
 ## 사용법
 ARP 출결 체크 프로그램
