@@ -336,7 +336,7 @@ void database_update(char* mac_address)
 		else
 		{
 			printf("Checking Being Late\n");
-			sprintf(query_buffer, "UPDATE ARPUserTable SET status = 'T'");
+			sprintf(query_buffer, "UPDATE ARPUserTable SET status = 'T' WHERE mac_address = '%s'", mac_address);
 			if(mysql_query(conn, query_buffer))
 			{
 				printf("update fail");
